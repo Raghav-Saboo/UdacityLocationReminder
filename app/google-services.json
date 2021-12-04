@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "586173804994",
+    "project_id": "location-reminder-cd569",
+    "storage_bucket": "location-reminder-cd569.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:586173804994:android:46e41e109f25e03876e65b",
+        "android_client_info": {
+          "package_name": "com.example.android.locationreminder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "586173804994-pabvah4cvo0qk6el8kstda5vruhadje7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.locationreminder",
+            "certificate_hash": "fdeec29ec4d21f2a2c1bf7aeebec256836776b6e"
+          }
+        },
+        {
+          "client_id": "586173804994-6t7ae0o8ivcpl86qojkn0ktmkd06em1g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPadKM78R40XzCkhHVIRU9gZAYa1v67GA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "586173804994-6t7ae0o8ivcpl86qojkn0ktmkd06em1g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

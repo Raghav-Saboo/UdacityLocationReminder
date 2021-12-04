@@ -1,0 +1,5 @@
+<resources>
+  <!--      https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=FD:EE:C2:9E:C4:D2:1F:2A:2C:1B:F7:AE:EB:EC:25:68:36:77:6B:6E%3Bcom.example.android.locationreminder
+  -->
+  <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyARlBWGj7pHzcBpZBz-Vn1Ts7PCioASCH8</string>
+</resources>
