@@ -4,8 +4,7 @@ Location Reminder
 
 ## Getting Started
 
-Location Reminder is an app hat remind the user to do something when he reaches a specific location.
-
+A TODO list app with location reminders that remind the user to do something when the user is at a specific location. The app will require the user to create an account and login to set and access reminders.
 
 ### Installation
 
