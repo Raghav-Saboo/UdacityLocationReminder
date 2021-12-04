@@ -35,13 +35,14 @@ import org.junit.runner.RunWith
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
+import org.koin.test.AutoCloseKoinTest
 import org.mockito.Mockito
 
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 @ExperimentalCoroutinesApi
-class ReminderListFragmentTest {
+class ReminderListFragmentTest : AutoCloseKoinTest() {
 
 //    TODO: test the navigation of the fragments.
 //    TODO: test the displayed data on the UI.
