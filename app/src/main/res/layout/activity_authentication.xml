@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.locationreminder.authentication.AuthenticationActivity">
+    tools:context="com.example.android.project4.com.udacity.project4.authentication.AuthenticationActivity">
 
     <TextView
         android:id="@+id/loginDesc"

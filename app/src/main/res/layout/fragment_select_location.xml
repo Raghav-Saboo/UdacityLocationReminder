@@ -21,6 +21,6 @@
 
     <variable
         name="viewModel"
-        type="com.example.android.locationreminder.locationreminders.savereminder.SaveReminderViewModel" />
+        type="com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel" />
   </data>
 </layout>
