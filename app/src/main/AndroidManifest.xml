@@ -14,7 +14,8 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
-    <activity android:name="com.udacity.project4.locationreminders.RemindersActivity" />
+    <activity android:name="com.udacity.project4.locationreminders.RemindersActivity">
+    </activity>
     <activity android:name="com.udacity.project4.locationreminders.ReminderDescriptionActivity" />
     <!--
          The API key for Google Maps-based APIs is defined as a string resource.
@@ -30,7 +31,6 @@
 
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
-
     </activity>
 
     <meta-data

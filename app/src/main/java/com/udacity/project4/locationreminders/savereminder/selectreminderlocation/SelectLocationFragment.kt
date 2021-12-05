@@ -13,11 +13,14 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PointOfInterest
@@ -38,6 +41,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
   private lateinit var map: GoogleMap
   private val REQUEST_LOCATION_PERMISSION = 1
   private val DEFAULT_ZOOM = 15.0f
+  private var poi: PointOfInterest? = null
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -59,17 +63,25 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 //        TODO: add style to the map
 //        TODO: put a marker to location that the user selected
 
+    binding.saveLocation.setOnClickListener {
+      poi?.let {
+        onLocationSelected()
+      } ?: Toast.makeText(context, context?.getString(R.string.select_poi), Toast.LENGTH_SHORT)
+        .show()
+    }
 
 //        TODO: call this function after the user confirms on the selected location
     return binding.root
   }
 
-  private fun onLocationSelected(poi: PointOfInterest) {
-    _viewModel.latitude.value = poi.latLng.latitude
-    _viewModel.longitude.value = poi.latLng.longitude
-    _viewModel.selectedPOI.value = poi
-    _viewModel.reminderSelectedLocationStr.value = poi.name
-    NavigationCommand.To(SelectLocationFragmentDirections.actionSelectLocationFragmentToSaveReminderFragment())
+  private fun onLocationSelected() {
+    poi?.let {
+      _viewModel.latitude.value = it.latLng.latitude
+      _viewModel.longitude.value = it.latLng.longitude
+      _viewModel.selectedPOI.value = it
+      _viewModel.reminderSelectedLocationStr.value = it.name
+      _viewModel.navigationCommand.postValue(NavigationCommand.Back)
+    }
     //        TODO: When the user confirms on the selected location,
     //         send back the selected location details to the view model
     //         and navigate back to the previous fragment to save the reminder and add the geofence
@@ -147,14 +159,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
   }
 
   private fun setPoiClick(map: GoogleMap) {
-    map.setOnPoiClickListener { poi ->
+    map.setOnPoiClickListener { poiSel ->
+      poi = poiSel
       val poiMarker = map.addMarker(
         MarkerOptions()
-          .position(poi.latLng)
-          .title(poi.name)
+          .position(poiSel.latLng)
+          .title(poiSel.name)
       )
+      val zoomLevel = 15f
+      map.moveCamera(CameraUpdateFactory.newLatLngZoom(poiSel.latLng, zoomLevel))
       poiMarker.showInfoWindow()
-      onLocationSelected(poi)
     }
   }
 
