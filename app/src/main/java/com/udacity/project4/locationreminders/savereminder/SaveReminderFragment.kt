@@ -7,7 +7,9 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +25,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.material.snackbar.Snackbar
+import com.udacity.project4.BuildConfig
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -94,6 +97,40 @@ class SaveReminderFragment : BaseFragment() {
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
     if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
+      checkDeviceLocationSettingsAndStartGeofence()
+    }
+  }
+
+  /*
+   * In all cases, we need to have the location permission.  On Android 10+ (Q) we need to have
+   * the background permission as well.
+   */
+  override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<String>,
+    grantResults: IntArray,
+  ) {
+    Log.d(TAG, "onRequestPermissionResult")
+    if (
+      grantResults.isEmpty() ||
+      grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
+      (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
+        grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
+        PackageManager.PERMISSION_DENIED)
+    ) {
+      Snackbar.make(
+        this.requireView(),
+        R.string.permission_denied_explanation,
+        Snackbar.LENGTH_INDEFINITE
+      )
+        .setAction(R.string.settings) {
+          startActivity(Intent().apply {
+            action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+            data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+          })
+        }.show()
+    } else {
       checkDeviceLocationSettingsAndStartGeofence()
     }
   }
@@ -192,11 +229,7 @@ class SaveReminderFragment : BaseFragment() {
       else -> REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
     }
     Log.d(TAG, "Request foreground only location permission")
-    ActivityCompat.requestPermissions(
-      this.requireActivity(),
-      permissionsArray,
-      resultCode
-    )
+    requestPermissions(permissionsArray, resultCode)
   }
 
   @SuppressLint("MissingPermission")
