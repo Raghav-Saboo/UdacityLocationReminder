@@ -86,4 +86,13 @@ class RemindersLocalDataRepositoryTest {
     MatcherAssert.assertThat(result.data, Matchers.empty())
   }
 
+  @Test
+  fun getNonExistingReminder_deletesAllReminder() = runBlocking {
+    val result: Result<ReminderDTO> = localDataSource.getReminder("randomId")
+
+    assert(result is Result.Error)
+    result as Result.Error
+    MatcherAssert.assertThat(result.message, Matchers.`is`("Reminder not found!"))
+  }
+
 }
