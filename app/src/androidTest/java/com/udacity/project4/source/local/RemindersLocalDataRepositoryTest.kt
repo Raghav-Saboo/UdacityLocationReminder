@@ -87,7 +87,7 @@ class RemindersLocalDataRepositoryTest {
   }
 
   @Test
-  fun getNonExistingReminder_deletesAllReminder() = runBlocking {
+  fun getNonExistingReminder_returnsError() = runBlocking {
     val result: Result<ReminderDTO> = localDataSource.getReminder("randomId")
 
     assert(result is Result.Error)

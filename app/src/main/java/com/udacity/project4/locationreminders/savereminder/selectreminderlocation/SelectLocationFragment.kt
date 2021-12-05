@@ -4,7 +4,6 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
@@ -22,8 +21,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainer
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -160,7 +157,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         MarkerOptions()
           .position(latLng)
           .title(getString(R.string.dropped_pin))
-      )
+      ).showInfoWindow()
       map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM))
       poi = PointOfInterest(latLng, null, getString(R.string.dropped_pin))
     }
@@ -195,12 +192,11 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     grantResults: IntArray,
   ) {
     Log.d(TAG, "onRequestPermissionResult")
-
     if (
       grantResults.isEmpty() ||
       grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
-      (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
-        grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
+      (requestCode == REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE &&
+        grantResults[LOCATION_PERMISSION_INDEX] ==
         PackageManager.PERMISSION_DENIED)
     ) {
       Snackbar.make(
@@ -221,11 +217,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     getDeviceLocation()
   }
 
+  @SuppressLint("MissingPermission")
   private fun checkPermissions() {
-    if (foregroundAndBackgroundLocationPermissionApproved()) {
+    if (foregroundLocationPermissionApproved()) {
       checkDeviceLocationSettings()
     } else {
-      requestForegroundAndBackgroundLocationPermissions()
+      requestForegroundLocationPermission()
     }
     getDeviceLocation()
   }
@@ -237,7 +234,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
      * cases when a location is not available.
      */
     try {
-      if (foregroundAndBackgroundLocationPermissionApproved()) {
+      if (foregroundLocationPermissionApproved()) {
         val locationResult = fusedLocationProviderClient.lastLocation
         locationResult.addOnCompleteListener { task ->
           if (task.isSuccessful) {
@@ -250,6 +247,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 LatLng(lastKnownLocation.latitude,
                        lastKnownLocation.longitude), DEFAULT_ZOOM))
             }
+            map.isMyLocationEnabled = true
           } else {
             Log.d(TAG, "Current location is null. Using defaults.")
             Log.e(TAG, "Exception: %s", task.exception)
@@ -300,46 +298,27 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
    *  Android versions.
    */
   @TargetApi(29)
-  private fun foregroundAndBackgroundLocationPermissionApproved(): Boolean {
-    val foregroundLocationApproved = (
+  private fun foregroundLocationPermissionApproved(): Boolean {
+    return (
       PackageManager.PERMISSION_GRANTED ==
-        ActivityCompat.checkSelfPermission(this.requireContext(),
+        ActivityCompat.checkSelfPermission(requireContext(),
                                            Manifest.permission.ACCESS_FINE_LOCATION))
-    val backgroundPermissionApproved =
-      if (runningQOrLater) {
-        PackageManager.PERMISSION_GRANTED ==
-          ActivityCompat.checkSelfPermission(
-            this.requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION
-          )
-      } else {
-        true
-      }
-    return foregroundLocationApproved && backgroundPermissionApproved
   }
 
   /*
    *  Requests ACCESS_FINE_LOCATION and (on Android 10+ (Q) ACCESS_BACKGROUND_LOCATION.
    */
   @TargetApi(29)
-  private fun requestForegroundAndBackgroundLocationPermissions() {
-    if (foregroundAndBackgroundLocationPermissionApproved())
+  private fun requestForegroundLocationPermission() {
+    if (foregroundLocationPermissionApproved())
       return
-    var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-    val resultCode = when {
-      runningQOrLater -> {
-        permissionsArray += Manifest.permission.ACCESS_BACKGROUND_LOCATION
-        REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE
-      }
-      else -> REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
-    }
+    val permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
     Log.d(TAG, "Request foreground only location permission")
-    requestPermissions(permissionsArray, resultCode)
+    requestPermissions(permissionsArray, REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE)
   }
 
 }
 
-private const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 33
 private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
 private const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
 private const val LOCATION_PERMISSION_INDEX = 0
-private const val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
