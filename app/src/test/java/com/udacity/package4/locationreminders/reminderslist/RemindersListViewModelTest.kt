@@ -80,7 +80,7 @@ class RemindersListViewModelTest {
     remindersListViewModel.loadReminders()
 
     assertThat(remindersListViewModel.showSnackBar.getOrAwaitValue(),
-               Matchers.`is`("Tasks not found"))
+               Matchers.`is`("Reminders not found!"))
     assertThat(remindersListViewModel.showNoData.getOrAwaitValue(), Matchers.`is`(true))
   }
 
