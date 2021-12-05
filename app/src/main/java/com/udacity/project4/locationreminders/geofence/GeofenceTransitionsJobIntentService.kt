@@ -46,16 +46,22 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
   //TODO: get the request id of the current geofence
   private fun sendNotification(triggeringGeofences: List<Geofence>) {
-    val requestId = if (triggeringGeofences.isEmpty()) {
+    if (triggeringGeofences.isEmpty()) {
       Log.e(TAG, "No GeoFence found")
       return
-    } else {
-      triggeringGeofences[0].requestId
     }
 
-    //Get the local repository instance
     val remindersRepository: ReminderDataSource by inject()
 //        Interaction to the repository has to be through a coroutine scope
+    triggeringGeofences.map { it.requestId }.forEach { requestId ->
+      sendNotification(remindersRepository, requestId)
+    }
+  }
+
+  private fun sendNotification(
+    remindersRepository: ReminderDataSource,
+    requestId: String,
+  ) {
     CoroutineScope(coroutineContext).launch(SupervisorJob()) {
       //get the reminder with the request id
       val result = remindersRepository.getReminder(requestId)
